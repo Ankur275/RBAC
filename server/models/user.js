@@ -17,23 +17,53 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:[true,"Password is required"]
     },
+    role: { 
+        type: String, 
+        enum: ['Admin', 'User', 'Moderator'], 
+        default: 'User' 
+    },
+
+    passwordHistory: [{ password: String }],
+
     resetPasswordToken: String,
     resetPasswordExpires: Date,
-    refreshToken: String,
+    refreshToken:[ 
+        {
+            token: String,
+            expiresAt: Date,
+        },
+    ],
     
 },{
     timestamps:true
 })
 
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
+userSchema.methods.generateEmailVerificationToken = function () {
+    return jwt.sign(
+        { _id: this._id },
+        process.env.EMAIL_VERIFICATION_SECRET,
+        { expiresIn: '1h' }
+    );
+};
+
+// Prevent password reuse
+userSchema.methods.isPasswordReused = async function (newPassword) {
+    for (const history of this.passwordHistory || []) {
+        const isReused = await bcrypt.compare(newPassword, history.password);
+        if (isReused) return true;
     }
+    return false;
+};
+
+userSchema.pre('save', async function (next) {
+    if (this.isModified('password')) {
+        this.passwordHistory = (this.passwordHistory || []).slice(-4); // Keep last 4 passwords
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(this.password, salt);
+        this.password = hashedPassword;
+        this.passwordHistory.push({ password: hashedPassword });
+    }
+    next();
 });
 
 
@@ -47,6 +77,8 @@ userSchema.methods.generateAccessToken = function(){
             _id: this._id,
             email: this.email,
             username: this.username,
+            role: this.role,
+            jti: new mongoose.Types.ObjectId().toString(),
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
@@ -60,6 +92,8 @@ userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id,
+            role:this.role,
+            jti: new mongoose.Types.ObjectId().toString(),
             
         },
         process.env.REFRESH_TOKEN_SECRET,
