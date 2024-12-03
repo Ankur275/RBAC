@@ -26,7 +26,7 @@ const createProtectedRoute = (path, role) => {
 };
 
 createProtectedRoute("/admin-dashboard", "Admin");
-createProtectedRoute("/manager-dashboard", "Moderator");
+createProtectedRoute("/moderator-dashboard", "Moderator");
 createProtectedRoute("/user-dashboard", "User");
 
 export default router;

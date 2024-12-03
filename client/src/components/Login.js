@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { jwtDecode}  from 'jwt-decode';
 import useAuth from '../hooks/useAuth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import axios from '../api/axios';
+import apiClient from '../api/axios';
 
 const LOGIN_URL = '/api/users/login';
 
@@ -31,7 +31,7 @@ const Login = () => {
         e.preventDefault();
     
         try {
-            const response = await axios.post(
+            const response = await apiClient.post(
                 LOGIN_URL,
                 { email, password: pwd },
                 { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
@@ -48,7 +48,7 @@ const Login = () => {
             // console.log("roles:", roles);
             const username = decoded?.username; // Extract username
             // console.log("username:", username);
-    
+            localStorage.setItem("accessToken", response.data.data.accessToken);
             setAuth({ email: decoded.email, roles, username, accessToken }); // Set auth state
             setEmail('');
             setPwd('');

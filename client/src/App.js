@@ -11,6 +11,9 @@ import Lounge from './components/Lounge';
 import LinkPage from './components/LinkPage';
 import RequireAuth from './components/RequireAuth';
 import { Routes, Route } from 'react-router-dom';
+import AdminDashboard from './components/AdminDashboard';
+import UserDashboard from './components/UserDashboard';
+import ModeratorDashboard from './components/ModeratorDashboard';
 
 const ROLES = {
   User: "User",
@@ -38,6 +41,18 @@ function App() {
           <Route path="moderator" element={<Moderator />} />
         </Route>
 
+
+        <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
+          <Route path="admin-dashboard" element={<AdminDashboard />} />
+        </Route>
+
+        <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>
+          <Route path="user-dashboard" element={<UserDashboard />} />
+        </Route>
+
+        <Route element={<RequireAuth allowedRoles={[ROLES.Moderator]} />}>
+          <Route path="moderator-dashboard" element={<ModeratorDashboard />} />
+        </Route>
 
         <Route element={<RequireAuth allowedRoles={[ROLES.Admin]} />}>
           <Route path="admin" element={<Admin />} />
