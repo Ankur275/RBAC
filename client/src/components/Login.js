@@ -1,13 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
+import { jwtDecode}  from 'jwt-decode';
 import useAuth from '../hooks/useAuth';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-
 import axios from '../api/axios';
+
 const LOGIN_URL = '/api/users/login';
 
 const Login = () => {
     const { setAuth } = useAuth();
-
     const navigate = useNavigate();
     const location = useLocation();
     const from = location.state?.from?.pathname || "/";
@@ -20,12 +20,12 @@ const Login = () => {
     const [errMsg, setErrMsg] = useState('');
 
     useEffect(() => {
-        userRef.current.focus();
-    }, [])
+        userRef.current?.focus();
+    }, []);
 
     useEffect(() => {
         setErrMsg('');
-    }, [email, pwd])
+    }, [email, pwd]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -33,43 +33,44 @@ const Login = () => {
         try {
             const response = await axios.post(
                 LOGIN_URL,
-                JSON.stringify({ email: email, password: pwd }), // Replace `email` with `username` if required
-                {
-                    headers: { 'Content-Type': 'application/json' },
-                    withCredentials: true,
-                }
+                { email, password: pwd },
+                { headers: { 'Content-Type': 'application/json' }, withCredentials: true }
             );
     
-            // Assuming the backend returns an accessToken and roles
-            const accessToken = response?.data?.accessToken;
-            const roles = response?.data?.roles;
+            // console.log("Server Response:", response.data);
     
-            setAuth({ email, roles, accessToken });
+            const accessToken = response.data.data.accessToken; // Fix
+            // console.log(accessToken);
+            const decoded = jwtDecode(accessToken); // Decode the token
+            // console.log("decoded:", decoded);
     
-            // Clear input fields
+            const roles = Array.isArray(decoded.role) ? decoded.role : [decoded.role]; // Extract roles
+            // console.log("roles:", roles);
+            const username = decoded?.username; // Extract username
+            // console.log("username:", username);
+    
+            setAuth({ email: decoded.email, roles, username, accessToken }); // Set auth state
             setEmail('');
             setPwd('');
-    
-            // Navigate to the intended page
-            navigate(from, { replace: true });
+            navigate(from, { replace: true }); // Redirect
         } catch (err) {
             if (!err?.response) {
                 setErrMsg('No Server Response');
-            } else if (err.response?.status === 400) {
-                setErrMsg('Missing Email or Password');
             } else if (err.response?.status === 401) {
                 setErrMsg('Unauthorized');
             } else {
                 setErrMsg('Login Failed');
             }
-            errRef.current.focus();
+            if (errRef.current) {
+                errRef.current.focus(); // Safely call focus on errRef
+            }
         }
     };
+    
 
     return (
-
         <section>
-            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+            <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive" tabIndex =" -1">{errMsg}</p>
             <h1>Sign In</h1>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="email">Email:</label>
@@ -100,8 +101,7 @@ const Login = () => {
                 </span>
             </p>
         </section>
+    );
+};
 
-    )
-}
-
-export default Login
+export default Login;
