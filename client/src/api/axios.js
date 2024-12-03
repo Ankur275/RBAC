@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an instance of axios
 const apiClient = axios.create({
-    baseURL: "http://localhost:4000", // Update with your backend's base URL
+    baseURL: "https://rbac-sooo84.vercel.app/", // Update with your backend's base URL
     withCredentials: true, // Enables sending cookies with requests
 });
 
