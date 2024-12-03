@@ -154,7 +154,7 @@ export const login = asyncHandler(async (req, res, next) => {
 });
 // Logout user and revoke refresh tokens
 export const logout = asyncHandler(async (req, res, next) => {
-    const { refreshToken } = req.cookies;
+    const { refreshToken } = req.cookies?.refreshToken;
 
     if (!refreshToken) {
         throw new ApiError(400, "Refresh token is required");
@@ -164,15 +164,16 @@ export const logout = asyncHandler(async (req, res, next) => {
         const user = await User.findOne({ "refreshToken.token": refreshToken });
 
         if (!user) {
-            throw new ApiError(404, "User not found");
+            res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+            throw new ApiError(204, "User not found");
         }
 
         // Remove the specific token
         user.refreshToken = user.refreshToken.filter(token => token.token !== refreshToken);
         await user.save();
 
-        res.clearCookie("accessToken");
-        res.clearCookie("refreshToken");
+        res.clearCookie("accessToken",{ httpOnly: true, secure: true });
+        res.clearCookie("refreshToken", { httpOnly: true, secure: true });
 
         return res.status(200).json(new ApiResponse(200, {}, "Logged out successfully"));
     } catch (error) {

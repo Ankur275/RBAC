@@ -1,17 +1,21 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useContext } from "react";
 import AuthContext from "../context/AuthProvider";
+import apiClient from "../api/axios";
 
 const Home = () => {
     const { setAuth } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const logout = async () => {
-        // if used in more components, this should be in context 
-        // axios to /logout endpoint 
-        setAuth({});
-        navigate('/linkpage');
-    }
+        try {
+            await apiClient.post("api/users/logout",{},{withCredentials: true});
+            setAuth(null); // Clear auth state
+            navigate("/linkpage"); // Redirect to login
+        } catch (err) {
+            console.error("Logout failed:", err);
+        }
+    };
 
     return (
         <section>
