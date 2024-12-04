@@ -81,15 +81,15 @@ This project implements a comprehensive **Authentication**, **Authorization**, a
 ### Frontend Setup
 
 1. Navigate to the frontend directory:
-  ```bash
+    ```bash
   cd frontend
 
 2. Install dependencies:
-   ```bash
+    ```bash
    npm install
 
 3. Start the development server:
-     ```bash 
+    ```bash 
    npm start
 
 4. Access the frontend at http://localhost:3000.
