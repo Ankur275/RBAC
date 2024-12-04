@@ -59,7 +59,7 @@ This project implements a comprehensive **Authentication**, **Authorization**, a
    npm install
 
 3. Create a .env file:
-   
+   ```bash
    PORT=4000
    CORS_ORIGIN=http://localhost:3000
    MONGO_URI=<Your MongoDB Connection String>
@@ -72,7 +72,7 @@ This project implements a comprehensive **Authentication**, **Authorization**, a
    EMAIL_VERIFICATION_SECRET=<Your Email Verification Secret>
 
 4. Start the server:
-
+   ```bash
    npm start
 
 5. The backend will be live at http://localhost:4000.
@@ -81,15 +81,15 @@ This project implements a comprehensive **Authentication**, **Authorization**, a
 ### Frontend Setup
 
 1. Navigate to the frontend directory:
-
+   ```bash
   cd frontend
 
 2. Install dependencies:
-
+   ```bash
    npm install
 
 3. Start the development server:
-   
+     ```bash 
    npm start
 
 4. Access the frontend at http://localhost:3000.
