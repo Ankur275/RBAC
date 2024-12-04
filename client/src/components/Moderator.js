@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 const Moderator = () => {
     return (
         <section>
-            <h1>Editors Page</h1>
+            <h1>Moderator Page</h1>
             <br />
             <p>You must have been assigned an moderator role.</p>
             <div className="flexGrow">

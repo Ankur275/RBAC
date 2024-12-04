@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import  apiClient  from "../api/axios";
+import { useNavigate } from "react-router-dom";
 
 const ModeratorDashboard = () => {
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
+    const navigate = useNavigate();
+
+    const goBack = () => navigate(-1);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,6 +27,9 @@ const ModeratorDashboard = () => {
             <h1>Moderator Dashboard</h1>
             {message ? <p>{message}</p> : <p>Loading...</p>}
             {error && <p style={{ color: "red" }}>{error}</p>}
+            <div className="flexGrow">
+        <button onClick={goBack}>Go Back</button>
+    </div>
         </div>
     );
 };
