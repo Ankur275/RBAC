@@ -81,7 +81,7 @@ This project implements a comprehensive **Authentication**, **Authorization**, a
 ### Frontend Setup
 
 1. Navigate to the frontend directory:
-   ```bash
+  ```bash
   cd frontend
 
 2. Install dependencies:
